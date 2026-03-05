@@ -545,14 +545,14 @@ store.subscribe(handleStateChange);
 
 // Mảng câu chúc màu hồng
 const WISH_MESSAGES = [
-	"Năm mới an khang thịnh vượng",
-	"Năm mới bình an",
-	"Chúc mọi điều ước của em đều trở thành hiện thực ✨",
-	"Chúc gia đình em luôn bình an và hạnh phúc ❤️",
-	"Chúc em luôn khỏe mạnh và tràn đầy năng lượng 💪",
-	"Chúc công việc thuận lợi, thăng tiến không ngừng 🚀",
-	"Chúc em luôn mỉm cười và yêu đời mỗi ngày 😊",
-	"Chúc em gặp nhiều may mắn và niềm vui 🎉",
+	"Yêu em, Cô vợ mất não ❤️",
+	"Cảm ơn em vì đã đến bên anh",
+	"Chẳng phải phép màu, tại sao chúng ta gặp nhau ✨",
+	"Trân trọng từng phút giây có em ❤️",
+	"Mong em luôn hạnh phúc, luôn tươi cười, luôn cố gắng ✨",
+	"Cục cức trôi sông, làm chồng anh nhó",
+	"Yêu em, yêu từng chút. Thương em, thương từng phút ❤️",
+	"Anh không phải người dịu dàng nhất nhưng thương em nhiều nhất ✨",
 ];
 
 // Sinh 1 câu chúc bay lên
@@ -1609,7 +1609,7 @@ const finaleCount = 32;
 let currentFinaleCount = 0;
 // Sau mỗi vài đợt bình thường sẽ tự động chèn một đợt finale (bắn nhiều pháo hoa liên tục)
 let sequencesSinceFinale = 0;
-const SEQUENCES_BEFORE_FINALE = 7; // Sau ~7 đợt thì bắn 1 finale
+const SEQUENCES_BEFORE_FINALE = 177; // Sau ~7 đợt thì bắn 1 finale
 //随机生成一个烟花序列
 function startSequence() {
 	if (isFirstSeq) {
