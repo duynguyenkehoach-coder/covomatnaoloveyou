@@ -97,20 +97,15 @@ body {
 	}
 }
 
-/* ĐÃ SỬA: Ẩn hoàn toàn khu vực vẽ pháo hoa */
 .canvas-container {
 	width: 100%;
 	height: 100%;
 	transition: filter 0.3s;
-	display: none !important; /* Thêm dòng này để ẩn hoàn toàn */
-	opacity: 0 !important;    /* Đảm bảo nó không thể nhìn thấy */
-	pointer-events: none !important; /* Ngăn chặn người dùng click nhầm vào vùng ẩn */
 }
 .canvas-container canvas {
 	position: absolute;
 	mix-blend-mode: lighten;
 	transform: translateZ(0);
-	display: none !important; /* Ẩn luôn cả các thẻ canvas bên trong cho chắc chắn */
 }
 
 .controls {
