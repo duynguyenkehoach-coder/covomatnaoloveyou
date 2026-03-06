@@ -371,8 +371,40 @@
 		<script src="./js/Stage.js"></script>
 		<script src="./js/MyMath.js"></script>
 		<script src="./js/script.js"></script>
-	<audio id="bgMusic" loop>
-			<source src="./audio/nhac-nen.mp3" type="audio/mpeg">
+	<script src="./js/fscreen.js"></script>
+		<script src="./js/Stage.js"></script>
+		<script src="./js/MyMath.js"></script>
+		<script src="./js/script.js"></script>
+
+		<audio id="bgMusic" loop preload="auto">
+			<source src="./audio/ten-file-nhac.mp3" type="audio/mpeg">
 		</audio>
+
+		<script>
+			// Bắt mọi loại tương tác (Click chuột, chạm màn hình cảm ứng, hoặc bấm phím)
+			const interactionEvents = ['click', 'touchstart', 'keydown'];
+			const bgMusic = document.getElementById('bgMusic');
+
+			function forcePlayMusic() {
+				if (bgMusic.paused) {
+					// Ép âm lượng lên mức tối đa để tránh bị tắt tiếng ngầm
+					bgMusic.volume = 1; 
+					bgMusic.play().then(() => {
+						console.log("Nhạc đã phát thành công!");
+						// Nhạc kêu rồi thì gỡ bỏ lắng nghe để web không bị nặng
+						interactionEvents.forEach(event => {
+							document.removeEventListener(event, forcePlayMusic);
+						});
+					}).catch(error => {
+						console.log("Trình duyệt vẫn đang chặn:", error);
+					});
+				}
+			}
+
+			// Gắn "tai nghe" lên toàn bộ trang web
+			interactionEvents.forEach(event => {
+				document.addEventListener(event, forcePlayMusic, { once: true, capture: true });
+			});
+		</script>
 	</body>
 </html>
