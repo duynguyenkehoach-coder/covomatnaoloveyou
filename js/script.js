@@ -521,13 +521,22 @@ function handleStateChange(state, prevState) {
 	const canPlaySound = canPlaySoundSelector(state);
 	const canPlaySoundPrev = canPlaySoundSelector(prevState);
 
-	if (canPlaySound !== canPlaySoundPrev) {
-		if (canPlaySound) {
-			soundManager.resumeAll();
-		} else {
-			soundManager.pauseAll();
-		}
-	}
+if (canPlaySound !== canPlaySoundPrev) {
+    if (canPlaySound) {
+        soundManager.resumeAll();
+        // 🎵 NHẠC NỀN: phát khi bật âm thanh
+        const bgMusic = document.getElementById('bgMusic');
+        if (bgMusic) {
+            bgMusic.volume = 0.4;
+            bgMusic.play().catch(() => {});
+        }
+    } else {
+        soundManager.pauseAll();
+        // 🎵 NHẠC NỀN: dừng khi tắt âm thanh
+        const bgMusic = document.getElementById('bgMusic');
+        if (bgMusic) bgMusic.pause();
+    }
+}
 
 	// Tự động bắt đầu lời chúc khi pháo hoa bắt đầu chạy (autoLaunch bật và không pause)
 	const isRunning = !state.paused && !state.menuOpen && state.config.autoLaunch;
