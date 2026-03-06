@@ -3151,23 +3151,25 @@ const soundManager = {
 		return Promise.all(allFilePromises);
 	},
 
-	pauseAll() {
-		this.ctx.suspend();
-	},
+pauseAll() {
+    this.ctx.suspend();
+    // 🎵 NHẠC NỀN: tắt theo nút âm thanh
+    const bgMusic = document.getElementById('bgMusic');
+    if (bgMusic) bgMusic.pause();
+},
 
-	resumeAll() {
-		// Play a sound with no volume for iOS. This 'unlocks' the audio context when the user first enables sound.
-		this.playSound("lift", 0);
-		// Chrome mobile requires interaction before starting audio context.
-		// The sound toggle button is triggered on 'touchstart', which doesn't seem to count as a full
-		// interaction to Chrome. I guess it needs a click? At any rate if the first thing the user does
-		// is enable audio, it doesn't work. Using a setTimeout allows the first interaction to be registered.
-		// Perhaps a better solution is to track whether the user has interacted, and if not but they try enabling
-		// sound, show a tooltip that they should tap again to enable sound.
-		setTimeout(() => {
-			this.ctx.resume();
-		}, 250);
-	},
+resumeAll() {
+    this.playSound("lift", 0);
+    setTimeout(() => {
+        this.ctx.resume();
+        // 🎵 NHẠC NỀN: tự phát cùng lúc AudioContext được mở khóa
+        const bgMusic = document.getElementById('bgMusic');
+        if (bgMusic && bgMusic.paused) {
+            bgMusic.volume = 0.4;
+            bgMusic.play().catch(() => {});
+        }
+    }, 250);
+},
 
 	// Private property used to throttle small burst sounds.
 	_lastSmallBurstTime: 0,
