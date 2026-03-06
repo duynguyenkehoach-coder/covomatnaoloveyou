@@ -2411,8 +2411,9 @@ function createHeartBurst(count, particleFactory) {
 		const nx = hx / 17;
 		const ny = hy / 17;
 		// Tính góc và độ dài từ tâm đến điểm → đây là hướng bay + tốc độ
+		// Lưu ý: engine dùng sin(angle)=speedX, cos(angle)=speedY nên phải đổi atan2(nx, ny)
 		const dist  = Math.sqrt(nx * nx + ny * ny);
-		const angle = Math.atan2(ny, nx);
+		const angle = Math.atan2(nx, ny);
 		// Thêm chút ngẫu nhiên để trông tự nhiên hơn
 		const jitter = (Math.random() - 0.5) * 0.12;
 		particleFactory(angle + jitter, dist);
