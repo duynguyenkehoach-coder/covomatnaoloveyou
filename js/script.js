@@ -1,5 +1,3 @@
-
-
 "use strict";
 
 
@@ -521,22 +519,13 @@ function handleStateChange(state, prevState) {
 	const canPlaySound = canPlaySoundSelector(state);
 	const canPlaySoundPrev = canPlaySoundSelector(prevState);
 
-if (canPlaySound !== canPlaySoundPrev) {
-    if (canPlaySound) {
-        soundManager.resumeAll();
-        // 🎵 NHẠC NỀN: phát khi bật âm thanh
-        const bgMusic = document.getElementById('bgMusic');
-        if (bgMusic) {
-            bgMusic.volume = 0.4;
-            bgMusic.play().catch(() => {});
-        }
-    } else {
-        soundManager.pauseAll();
-        // 🎵 NHẠC NỀN: dừng khi tắt âm thanh
-        const bgMusic = document.getElementById('bgMusic');
-        if (bgMusic) bgMusic.pause();
-    }
-}
+	if (canPlaySound !== canPlaySoundPrev) {
+		if (canPlaySound) {
+			soundManager.resumeAll();
+		} else {
+			soundManager.pauseAll();
+		}
+	}
 
 	// Tự động bắt đầu lời chúc khi pháo hoa bắt đầu chạy (autoLaunch bật và không pause)
 	const isRunning = !state.paused && !state.menuOpen && state.config.autoLaunch;
@@ -554,14 +543,14 @@ store.subscribe(handleStateChange);
 
 // Mảng câu chúc màu hồng
 const WISH_MESSAGES = [
-	"Yêu em, Cô vợ mất não ❤️",
-	"Cảm ơn em vì đã đến bên anh",
-	"Chẳng phải phép màu, tại sao chúng ta gặp nhau ✨",
-	"Trân trọng từng phút giây có em ❤️",
-	"Mong em luôn hạnh phúc, luôn tươi cười, luôn cố gắng ✨",
-	"Cục cức trôi sông, làm chồng anh nhó",
-	"Yêu em, yêu từng chút. Thương em, thương từng phút ❤️",
-	"Anh không phải người dịu dàng nhất nhưng thương em nhiều nhất ✨",
+	"Năm mới an khang thịnh vượng",
+	"Năm mới bình an",
+	"Chúc mọi điều ước của em đều trở thành hiện thực ✨",
+	"Chúc gia đình em luôn bình an và hạnh phúc ❤️",
+	"Chúc em luôn khỏe mạnh và tràn đầy năng lượng 💪",
+	"Chúc công việc thuận lợi, thăng tiến không ngừng 🚀",
+	"Chúc em luôn mỉm cười và yêu đời mỗi ngày 😊",
+	"Chúc em gặp nhiều may mắn và niềm vui 🎉",
 ];
 
 // Sinh 1 câu chúc bay lên
@@ -1618,7 +1607,7 @@ const finaleCount = 32;
 let currentFinaleCount = 0;
 // Sau mỗi vài đợt bình thường sẽ tự động chèn một đợt finale (bắn nhiều pháo hoa liên tục)
 let sequencesSinceFinale = 0;
-const SEQUENCES_BEFORE_FINALE = 177; // Sau ~7 đợt thì bắn 1 finale
+const SEQUENCES_BEFORE_FINALE = 7; // Sau ~7 đợt thì bắn 1 finale
 //随机生成一个烟花序列
 function startSequence() {
 	if (isFirstSeq) {
@@ -2407,6 +2396,30 @@ function createBurst(count, particleFactory, startAngle = 0, arcLength = PI_2) {
 }
 
 /**
+ * Tạo vụ nổ hình TRÁI TIM bằng phương trình tham số
+ * x = 16sin³(t),  y = -(13cos(t) - 5cos(2t) - 2cos(3t) - cos(4t))
+ * @param {number}   count           Số lượng hạt sao
+ * @param {Function} particleFactory Nhận (angle, speedMult)
+ */
+function createHeartBurst(count, particleFactory) {
+	for (let i = 0; i < count; i++) {
+		const t = (i / count) * PI_2;
+		// Toạ độ điểm trên đường cong trái tim
+		const hx =  16 * Math.pow(Math.sin(t), 3);
+		const hy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+		// Chuẩn hoá về khoảng [-1, 1]  (max khoảng 17 đơn vị)
+		const nx = hx / 17;
+		const ny = hy / 17;
+		// Tính góc và độ dài từ tâm đến điểm → đây là hướng bay + tốc độ
+		const dist  = Math.sqrt(nx * nx + ny * ny);
+		const angle = Math.atan2(ny, nx);
+		// Thêm chút ngẫu nhiên để trông tự nhiên hơn
+		const jitter = (Math.random() - 0.5) * 0.12;
+		particleFactory(angle + jitter, dist);
+	}
+}
+
+/**
  *
  * @param {string} wordText  文字内容
  * @param {Function} particleFactory 每生成一颗星/粒子调用一次。传递参数:
@@ -2817,26 +2830,16 @@ class Shell {
 					}
 				});
 			}
-			// Normal burst
+			// ❤️ Nổ hình TRÁI TIM thay vì hình cầu
 			else {
-				createBurst(this.starCount, starFactory);
+				createHeartBurst(this.starCount, starFactory);
 			}
 		} else if (Array.isArray(this.color)) {
-			if (Math.random() < 0.5) {
-				const start = Math.random() * Math.PI;
-				const start2 = start + Math.PI;
-				const arc = Math.PI;
-				color = this.color[0];
-				// Not creating a full arc automatically reduces star count.
-				createBurst(this.starCount, starFactory, start, arc);
-				color = this.color[1];
-				createBurst(this.starCount, starFactory, start2, arc);
-			} else {
-				color = this.color[0];
-				createBurst(this.starCount / 2, starFactory);
-				color = this.color[1];
-				createBurst(this.starCount / 2, starFactory);
-			}
+			// ❤️ Nổ trái tim cho pháo 2 màu
+			color = this.color[0];
+			createHeartBurst(this.starCount / 2, starFactory);
+			color = this.color[1];
+			createHeartBurst(this.starCount / 2, starFactory);
 		} else {
 			throw new Error("无效的烟花颜色。应为字符串或字符串数组，但得到:" + this.color);
 		}
@@ -3078,31 +3081,31 @@ const soundManager = {
 	ctx: new (window.AudioContext || window.webkitAudioContext)(),
 	sources: {
 		lift: {
-			volume: 0,
+			volume: 1,
 			playbackRateMin: 0.85,
 			playbackRateMax: 0.95,
 			fileNames: ["lift1.mp3", "lift2.mp3", "lift3.mp3"],
 		},
 		burst: {
-			volume: 0,
+			volume: 1,
 			playbackRateMin: 0.8,
 			playbackRateMax: 0.9,
 			fileNames: ["burst1.mp3", "burst2.mp3"],
 		},
 		burstSmall: {
-			volume: 0,
+			volume: 0.25,
 			playbackRateMin: 0.8,
 			playbackRateMax: 1,
 			fileNames: ["burst-sm-1.mp3", "burst-sm-2.mp3"],
 		},
 		crackle: {
-			volume: 0,
+			volume: 0.2,
 			playbackRateMin: 1,
 			playbackRateMax: 1,
 			fileNames: ["crackle1.mp3"],
 		},
 		crackleSmall: {
-			volume: 0,
+			volume: 0.3,
 			playbackRateMin: 1,
 			playbackRateMax: 1,
 			fileNames: ["crackle-sm-1.mp3"],
@@ -3151,25 +3154,23 @@ const soundManager = {
 		return Promise.all(allFilePromises);
 	},
 
-pauseAll() {
-    this.ctx.suspend();
-    // 🎵 NHẠC NỀN: tắt theo nút âm thanh
-    const bgMusic = document.getElementById('bgMusic');
-    if (bgMusic) bgMusic.pause();
-},
+	pauseAll() {
+		this.ctx.suspend();
+	},
 
-resumeAll() {
-    this.playSound("lift", 0);
-    setTimeout(() => {
-        this.ctx.resume();
-        // 🎵 NHẠC NỀN: tự phát cùng lúc AudioContext được mở khóa
-        const bgMusic = document.getElementById('bgMusic');
-        if (bgMusic && bgMusic.paused) {
-            bgMusic.volume = 0.4;
-            bgMusic.play().catch(() => {});
-        }
-    }, 250);
-},
+	resumeAll() {
+		// Play a sound with no volume for iOS. This 'unlocks' the audio context when the user first enables sound.
+		this.playSound("lift", 0);
+		// Chrome mobile requires interaction before starting audio context.
+		// The sound toggle button is triggered on 'touchstart', which doesn't seem to count as a full
+		// interaction to Chrome. I guess it needs a click? At any rate if the first thing the user does
+		// is enable audio, it doesn't work. Using a setTimeout allows the first interaction to be registered.
+		// Perhaps a better solution is to track whether the user has interacted, and if not but they try enabling
+		// sound, show a tooltip that they should tap again to enable sound.
+		setTimeout(() => {
+			this.ctx.resume();
+		}, 250);
+	},
 
 	// Private property used to throttle small burst sounds.
 	_lastSmallBurstTime: 0,
